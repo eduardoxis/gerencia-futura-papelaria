@@ -1,0 +1,151 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function estaAutenticado() {
+      return request.auth != null;
+    }
+    function ehAdmin() {
+      return estaAutenticado() &&
+        (get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == "admin" ||
+         (get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.roles is list &&
+          get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.roles.hasAny(["admin"])));
+    }
+    function ehDono(uid) {
+      return estaAutenticado() && request.auth.uid == uid;
+    }
+    function donoDoDocumento() {
+      return estaAutenticado() && resource.data.criadoPor == request.auth.uid;
+    }
+    function donoDaComissao(comissaoId) {
+      return estaAutenticado() &&
+        get(/databases/$(database)/documents/comissoes/$(comissaoId)).data.criadoPor == request.auth.uid;
+    }
+    function donoDaCotacao(cotacaoId) {
+      return estaAutenticado() &&
+        get(/databases/$(database)/documents/cotacoes/$(cotacaoId)).data.criadoPor == request.auth.uid;
+    }
+    match /usuarios/{uid} {
+      // Cada pessoa vê somente o próprio perfil. A gestão de usuários
+      // permanece exclusiva do administrador.
+      allow read: if ehDono(uid) || ehAdmin();
+      allow create: if estaAutenticado() && request.auth.uid == uid &&
+        request.resource.data.roles == ["user"];
+      allow update: if ehAdmin() ||
+        (ehDono(uid) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(["roles", "role"]));
+      allow delete: if ehAdmin();
+    }
+    match /cotacoes/{cotacaoId} {
+      // A equipe pode consultar todas as cotações. Alterações continuam
+      // limitadas ao criador ou ao administrador.
+      allow read: if estaAutenticado();
+      allow create: if estaAutenticado() &&
+        request.resource.data.criadoPor == request.auth.uid;
+      allow update: if (donoDoDocumento() || ehAdmin()) &&
+        request.resource.data.criadoPor == resource.data.criadoPor;
+      allow delete: if donoDoDocumento() || ehAdmin();
+      match /lembretes/{lembreteId} {
+        allow read, create: if donoDaCotacao(cotacaoId) || ehAdmin();
+        allow update, delete: if false;
+      }
+    }
+    match /config/{docId} {
+      allow read:  if estaAutenticado();
+      allow write: if ehAdmin();
+    }
+    match /comissoes/{comissaoId} {
+      // Toda a equipe pode consultar as planilhas; somente o criador ou
+      // administrador pode alterar ou excluir.
+      allow read:   if estaAutenticado();
+      allow create: if estaAutenticado() &&
+        request.resource.data.criadoPor == request.auth.uid;
+      allow update: if (donoDoDocumento() || ehAdmin()) &&
+        request.resource.data.criadoPor == resource.data.criadoPor;
+      allow delete: if donoDoDocumento() || ehAdmin();
+      match /registros/{registroId} {
+        allow read: if estaAutenticado();
+        allow create, update, delete: if donoDaComissao(comissaoId) || ehAdmin();
+      }
+    }
+    // ── Produtos / Estoque — leitura liberada p/ o Caixa (PDV),
+    //     escrita de estoque também liberada p/ dar baixa nas vendas.
+    //     Cadastro/edição completa do módulo Estoque continua admin.
+    match /pf_produtos/{produtoId} {
+      allow read: if estaAutenticado();
+      allow create, update, delete: if ehAdmin();
+    }
+    match /pf_marcas/{marcaId} {
+      allow read: if estaAutenticado();
+      allow create, update, delete: if ehAdmin();
+    }
+    match /pf_estoque_historico/{movId} {
+      allow read: if estaAutenticado();
+      allow create: if estaAutenticado();
+      allow update, delete: if ehAdmin();
+    }
+    match /pf_custo_historico/{histId} {
+      allow read: if ehAdmin();
+      allow create, update, delete: if ehAdmin();
+    }
+    // ── Serviços Personalizados — cadastro admin, leitura liberada
+    //     pro Caixa (PDV) buscar/adicionar na venda ───────────────
+    match /pf_servicos/{servicoId} {
+      allow read: if estaAutenticado();
+      allow create, update, delete: if ehAdmin();
+    }
+    // ── Caixa (PDV) — vendas ────────────────────────────────────
+    match /pf_vendas/{vendaId} {
+      allow read:   if ehAdmin();
+      allow create: if ehAdmin() &&
+        request.resource.data.operadorUid == request.auth.uid;
+      allow update, delete: if ehAdmin();
+    }
+    match /pf_caixa_sessoes/{sessaoId} {
+      allow read, create, update: if ehAdmin();
+      allow delete: if ehAdmin();
+    }
+    // ── Entrega — controle de saídas/entregas, liberado pra qualquer
+    //     usuário autenticado (mesmo nível de acesso do Caixa) ──────
+    match /pf_entregas/{entregaId} {
+      allow read:   if donoDoDocumento() || ehAdmin();
+      allow create: if estaAutenticado() &&
+        request.resource.data.criadoPor == request.auth.uid;
+      allow update: if (donoDoDocumento() || ehAdmin()) &&
+        request.resource.data.criadoPor == resource.data.criadoPor;
+      allow delete: if donoDoDocumento() || ehAdmin();
+    }
+    match /prom_historico/{registroId} {
+      allow read:   if ehAdmin();
+      allow create: if estaAutenticado();
+      allow update, delete: if ehAdmin();
+    }
+    match /prom_clientes/{clienteId} {
+      allow read:   if ehAdmin();
+      allow create: if ehAdmin();
+      allow update: if ehAdmin();
+      allow delete: if ehAdmin();
+    }
+    match /prom_compras/{compraId} {
+      allow read:   if ehAdmin();
+      allow create: if ehAdmin();
+      allow update: if ehAdmin();
+      allow delete: if ehAdmin();
+    }
+    match /prom_pagamentos/{pagamentoId} {
+      allow read:   if ehAdmin();
+      allow create: if ehAdmin();
+      allow update: if ehAdmin();
+      allow delete: if ehAdmin();
+    }
+    match /prom_cartas_anuencia/{cartaId} {
+      allow read:   if ehAdmin();
+      allow create: if ehAdmin();
+      allow update: if ehAdmin();
+      allow delete: if ehAdmin();
+      match /versoes/{versaoId} {
+        allow read:   if ehAdmin();
+        allow create: if ehAdmin();
+        allow update, delete: if ehAdmin();
+      }
+    }
+  }
+}
