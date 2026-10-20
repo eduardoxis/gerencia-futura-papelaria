@@ -104,10 +104,23 @@ function iniciarLogin() {
 function iniciarPainel() {
   aplicarIcones();
   const painel = document.querySelector("#modal-admin");
-  document.querySelectorAll("[data-tab-trigger]").forEach((aba) => aba.addEventListener("click", () => trocarAba(painel, aba.dataset.tabTrigger)));
+  document.querySelectorAll("[data-tab-trigger]").forEach((aba) => aba.addEventListener("click", () => {
+    trocarAba(painel, aba.dataset.tabTrigger);
+    const titulo = aba.querySelector(".nav-label")?.textContent?.trim() || "Dashboard";
+    const tituloEl = document.querySelector("#admin-page-title");
+    if (tituloEl) tituloEl.textContent = titulo;
+  }));
   document.querySelector("#btn-sair-admin")?.addEventListener("click", () => sair());
   ouvirEstadoAuth(async (usuario) => {
     if (!usuario || !ehAdmin()) { window.location.replace("/login.html"); return; }
+    const nome = usuario.displayName?.trim() || usuario.email?.split("@")[0] || "Administrador";
+    const inicial = nome.charAt(0).toUpperCase();
+    const nomeEl = document.querySelector("#admin-user-nome");
+    const emailEl = document.querySelector("#admin-user-email");
+    const inicialEl = document.querySelector("#admin-user-inicial");
+    if (nomeEl) nomeEl.textContent = nome;
+    if (emailEl) emailEl.textContent = usuario.email || "Administrador";
+    if (inicialEl) inicialEl.textContent = inicial;
     try { await iniciarPainelAdmin(painel); }
     catch (erro) { registrarErroCliente("iniciar-painel-admin", erro); toast("Não foi possível carregar o painel. Atualize a página e tente novamente.", "error"); }
   });
