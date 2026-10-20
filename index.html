@@ -1,62 +1,30 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Gerência Futura Papelaria</title>
-<meta name="description" content="Painel administrativo da Papelaria Futura.">
-<meta name="robots" content="noindex, nofollow">
-<link rel="icon" href="/assets/icons/favicon.ico">
-<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
-<link rel="manifest" href="/manifest.json">
-<link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/css/modal.css">
-<link rel="stylesheet" href="/css/responsive.css">
-<style>
-  .admin-login-shell { min-height: 100vh; display: grid; place-items: center; padding: 1.5rem; background: linear-gradient(135deg, var(--azul-900), #173b78); }
-  .admin-login-card { width: min(430px, 100%); padding: 2rem; background: var(--branco); border-radius: var(--raio-lg); box-shadow: var(--sombra-lg); }
-  .admin-login-brand { display: flex; align-items: center; gap: .85rem; margin-bottom: 1.7rem; }
-  .admin-login-brand img { width: 52px; height: 52px; object-fit: cover; border-radius: 12px; }
-  .admin-login-brand h1 { color: var(--azul-900); font-size: 1.25rem; }
-  .admin-login-brand p { margin: .2rem 0 0; color: var(--cinza-500); font-size: .88rem; }
-  .admin-login-card input { width: 100%; min-height: 44px; border: 1px solid var(--cinza-300); border-radius: var(--raio-sm); padding: .65rem .8rem; font: inherit; }
-  .admin-login-card input:focus { outline: 2px solid var(--azul-500); outline-offset: 1px; }
-  .admin-login-card label { display: grid; gap: .4rem; color: var(--cinza-700); font-size: .88rem; font-weight: 600; }
-  .admin-login-card form { display: grid; gap: 1rem; }
-  .admin-login-card .btn-primary { width: 100%; justify-content: center; min-height: 46px; }
-  .admin-login-error { min-height: 1.25rem; margin: 0; color: #b42318; font-size: .86rem; }
-  #modal-admin { padding: 0; background: var(--cinza-050); backdrop-filter: none; }
-  #modal-admin .modal__panel--admin { width: 100%; max-width: none; height: 100vh; max-height: none; border-radius: 0; box-shadow: none; }
-  #modal-admin .modal__head { flex-shrink: 0; }
-  .admin-exit { display: inline-flex; align-items: center; gap: .45rem; padding: .55rem .85rem; border: 1px solid var(--cinza-300); border-radius: var(--raio-sm); color: var(--cinza-700); font-size: .86rem; font-weight: 600; }
-  .admin-exit:hover { background: var(--cinza-100); }
-  @media (max-width: 640px) { #modal-admin .modal__head { padding: .85rem 1rem; } .modal__head-logo { display: none; } .admin-login-card { padding: 1.5rem; } }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Gerência Futura Papelaria</title>
+  <meta name="description" content="Painel administrativo da Papelaria Futura.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/assets/icons/favicon.ico">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/modal.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <style>
+    #modal-admin { padding: 0; background: var(--cinza-050); backdrop-filter: none; }
+    #modal-admin .modal__panel--admin { width: 100%; max-width: none; height: 100vh; max-height: none; border-radius: 0; box-shadow: none; }
+    #modal-admin .modal__head { flex-shrink: 0; }
+    .admin-exit { display:inline-flex; align-items:center; gap:.45rem; padding:.55rem .85rem; border:1px solid var(--cinza-300); border-radius:var(--raio-sm); color:var(--cinza-700); font-size:.86rem; font-weight:600; }
+    .admin-exit:hover { background:var(--cinza-100); }
+    @media (max-width:640px) { #modal-admin .modal__head { padding:.85rem 1rem; } .modal__head-logo { display:none; } }
+  </style>
 </head>
 <body>
-  <main class="admin-login-shell" id="tela-login">
-    <section class="admin-login-card" aria-labelledby="titulo-login">
-      <div class="admin-login-brand">
-        <img src="/assets/images/logo.webp" alt="Papelaria Futura">
-        <div>
-          <h1 id="titulo-login">Gerência Futura Papelaria</h1>
-          <p>Acesso restrito à administração</p>
-        </div>
-      </div>
-      <form id="form-login-admin" novalidate>
-        <label>E-mail<input name="email" type="email" inputmode="email" autocomplete="email" maxlength="160" required></label>
-        <label>Senha<input name="senha" type="password" autocomplete="current-password" minlength="6" maxlength="128" required></label>
-        <label style="display:flex; align-items:center; grid-template-columns:auto 1fr; gap:.55rem; font-weight:400;"><input name="manterLogin" type="checkbox" checked style="width:16px; min-height:16px;">Manter conectado neste dispositivo</label>
-        <p class="admin-login-error" id="erro-login-admin" role="alert"></p>
-        <button class="btn-primary" type="submit"><span data-icon="logIn"></span>Entrar no painel</button>
-      </form>
-    </section>
-  </main>
-
-  <div class="modal" id="modal-admin" aria-label="Painel administrativo" aria-modal="true" role="dialog" hidden>
+  <div class="modal is-open" id="modal-admin" aria-label="Painel administrativo" aria-modal="true" role="dialog">
     <div class="modal__panel modal__panel--admin">
       <header class="modal__head">
-        <div class="modal__head-info"><span class="modal__head-logo" id="admin-logo-icon"></span><div><h2>Gerência Futura Papelaria</h2><p class="modal__head-sub">Painel administrativo</p></div></div>
+        <div class="modal__head-info"><span class="modal__head-logo" id="admin-logo-icon"></span><div><h1>Gerência Futura Papelaria</h1><p class="modal__head-sub">Painel administrativo</p></div></div>
         <button class="admin-exit" id="btn-sair-admin" type="button"><span data-icon="logOut"></span>Sair</button>
       </header>
       <div class="modal__body">
@@ -76,7 +44,7 @@
           </div>
           <button class="tabs-nav__summary" type="button" data-tab-trigger="dashboard"><span class="tabs-nav__summary-icon" data-icon="trendingUp"></span><strong>Resumo rápido</strong><p>Acompanhe o desempenho da sua loja.</p><span class="tabs-nav__summary-link">Ver dashboard <span data-icon="chevronRight"></span></span></button>
         </nav>
-        <section class="tabs-content">
+        <main class="tabs-content">
           <div data-tab-panel="dashboard" id="painel-dashboard"></div>
           <div data-tab-panel="produtos" id="painel-produtos" hidden></div>
           <div data-tab-panel="categorias" id="painel-categorias" hidden></div>
@@ -88,7 +56,7 @@
           <div data-tab-panel="usuarios" id="painel-usuarios" hidden></div>
           <div data-tab-panel="clientes" id="painel-clientes" hidden></div>
           <div data-tab-panel="leads" id="painel-leads" hidden></div>
-        </section>
+        </main>
       </div>
     </div>
   </div>

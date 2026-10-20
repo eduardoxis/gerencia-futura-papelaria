@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Entrar — Gerência Futura Papelaria</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/assets/icons/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/modal.css">
+  <style>
+    body { background:#fff; }
+    .login-page { min-height:100vh; display:grid; place-items:center; padding:1.5rem; background:#fff; }
+    .login-card { width:min(430px, 100%); padding:2rem; background:#fff; border:1px solid var(--cinza-300); border-radius:var(--raio-lg); box-shadow:var(--sombra-md); }
+    .login-brand { display:flex; align-items:center; gap:.85rem; margin-bottom:1.7rem; }
+    .login-brand img { width:54px; height:54px; object-fit:cover; border-radius:12px; }
+    .login-brand h1 { color:var(--azul-900); font-size:1.25rem; }
+    .login-brand p { margin:.2rem 0 0; color:var(--cinza-500); font-size:.88rem; }
+    .login-form { display:grid; gap:1rem; }
+    .login-form label { display:grid; gap:.4rem; color:var(--cinza-700); font-size:.88rem; font-weight:600; }
+    .login-form input { width:100%; min-height:44px; border:1px solid var(--cinza-300); border-radius:var(--raio-sm); padding:.65rem .8rem; font:inherit; color:var(--cinza-900); }
+    .login-form input:focus { outline:2px solid var(--azul-500); outline-offset:1px; }
+    .password-field { position:relative; }
+    .password-field input { padding-right:3rem; }
+    .toggle-password { position:absolute; right:.55rem; top:50%; transform:translateY(-50%); width:34px; height:34px; display:grid; place-items:center; color:var(--azul-700); border-radius:50%; }
+    .toggle-password:hover { background:var(--azul-100); }
+    .toggle-password svg { width:19px; height:19px; }
+    .login-form .btn-primary { width:100%; min-height:46px; justify-content:center; }
+    .login-error { min-height:1.3rem; margin:0; color:#b42318; font-size:.86rem; line-height:1.35; }
+    .stay-signed { display:flex !important; grid-template-columns:auto 1fr; align-items:center; gap:.55rem; font-weight:400 !important; }
+    .stay-signed input { width:16px; min-height:16px; }
+  </style>
+</head>
+<body>
+  <main class="login-page">
+    <section class="login-card" aria-labelledby="titulo-login">
+      <div class="login-brand">
+        <img src="/assets/images/logo.webp" alt="Papelaria Futura">
+        <div><h1 id="titulo-login">Gerência Futura Papelaria</h1><p>Acesso restrito à administração</p></div>
+      </div>
+      <form class="login-form" id="form-login-admin" novalidate>
+        <label>E-mail<input name="email" type="email" inputmode="email" autocomplete="email" maxlength="160" data-protected-input required></label>
+        <label>Senha<span class="password-field"><input name="senha" type="password" autocomplete="current-password" minlength="6" maxlength="128" data-protected-input required><button class="toggle-password" type="button" data-toggle-password aria-label="Mostrar senha"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.7" stroke="currentColor" stroke-width="1.8"/></svg></button></span></label>
+        <label class="stay-signed"><input name="manterLogin" type="checkbox" checked>Manter conectado neste dispositivo</label>
+        <p class="login-error" id="erro-login-admin" role="alert" aria-live="polite"></p>
+        <button class="btn-primary" type="submit">Entrar no painel</button>
+      </form>
+    </section>
+  </main>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
